@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD-Red Dragon</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+       <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalog.html">Catálogo</a></li>
+        </ul>
+    </nav>
+    <h1>Productos Disponibles</h1>
+    <form id="itemForm">
+        <input type="hidden" id="itemId">
+        <input type="text" id="nombre" placeholder="Nombre del producto" required>
+        <input type="text" id="descripcion" placeholder="Descripción del producto" required>
+        <input type="number" id="precio" placeholder="Precio del producto" step="0.001" required>
+        <input type="text" id="categoria" placeholder="Categoría del producto" required>
+        <input type="number" id="stock" placeholder="Stock del producto" required>
+        <button type="submit" id="SubmitButton">Agregar Producto</button>
+        <button type="button" id="CancelButton" style="display: none;">Cancelar</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Imagen</th>
+                <th>nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="itemTableBody"></tbody>
+    </table>
+
+    <script type="module" src="./js/main.js"></script>
+    </body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD-Red Dragon</title>
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
     <nav class="navbar">
@@ -21,7 +21,8 @@
         <input type="number" id="precio" placeholder="Precio del producto" step="0.001" required>
         <input type="text" id="categoria" placeholder="Categoría del producto" required>
         <input type="number" id="stock" placeholder="Stock del producto" required>
-        <button type="submit" id="SubmitButton">Agregar Producto</button>
+        <input type="url" id="image" placeholder="URL de la imagen" required>
+        <button type="submit" id="submitBtn">Agregar Producto</button>
         <button type="button" id="CancelButton" style="display: none;">Cancelar</button>
     </form>
 
@@ -37,7 +38,7 @@
                 <th>Acciones</th>
             </tr>
         </thead>
-        <tbody id="itemTableBody"></tbody>
+        <tbody id="itemsTableBody"></tbody>
     </table>
 
     <script type="module" src="./js/main.js"></script>

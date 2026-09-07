@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - Red Dragon</title>
+    <link rel="stylesheet" href="./css/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <ul>
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalog.html">Catálogo</a></li>
+        </ul>
+    </nav>
+
+    <h1>Catálogo de Productos</h1>
+
+    <div id="catalogContainer" class="catalog-grid"></div>
+
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <span id="modalClose" class="modal-close">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="./js/catalog.js"></script>
+</body>
+</html>

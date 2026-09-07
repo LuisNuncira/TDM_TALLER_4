@@ -14,7 +14,7 @@ export function renderItems(items,tableBody) {
                 <button class="btn-delete" data-id="${item.id}">Eliminar</button>
             </td>
         `;
-        
+        tableBody.appendChild(row);
     });
 }
 export function resetForm(form, submitBtn){

@@ -34,41 +34,5 @@
     "categoria": "Ratones",
     "stock": 53,
     "image": "https://redragonshop.com/cdn/shop/products/M808gamingmouseredragon_8.png?v=1762457670&width=713"
-  },
-  {
-    "id": 5,
-    "nombre": "Zeus H510",
-    "descripcion": "Audífonos gaming con sonido envolvente virtual, micrófono desmontable y almohadillas cómodas.",
-    "precio": 129900,
-    "categoria": "Audífonos",
-    "stock": 18,
-    "image": "https://redragonshop.com/cdn/shop/products/RedragonH510ZEUS2RGBWiredGamingHeadset_1.png?v=1762457500&width=713"
-  },
-  {
-    "id": 6,
-    "nombre": "H350 Pandora",
-    "descripcion": "Audífonos inalámbricos con iluminación RGB, micrófono flexible y controles integrados.",
-    "precio": 184500,
-    "categoria": "Audífonos",
-    "stock": 12,
-    "image": "https://redragonshop.com/cdn/shop/products/RedragonH350PandoraRGBGamingHeadset_1.png?v=1762457420&width=713"
-  },
-  {
-    "id": 7,
-    "nombre": "Blazar GM300",
-    "descripcion": "Micrófono USB cardioide con control de ganancia y soporte ajustable para streaming.",
-    "precio": 219900,
-    "categoria": "Micrófonos",
-    "stock": 8,
-    "image": "https://redragonshop.com/cdn/shop/products/RedragonGM300BlazarRGBGamingMicrophone_1.png?v=1762457300&width=713"
-  },
-  {
-    "id": 8,
-    "nombre": "Pandeus GTB900",
-    "descripcion": "Base ergonómica para audífonos con iluminación RGB y dos puertos USB de acceso rápido.",
-    "precio": 89900,
-    "categoria": "Accesorios",
-    "stock": 31,
-    "image": "https://redragonshop.com/cdn/shop/products/RedragonPandeusGTB900RGBHeadsetStand_1.png?v=1762457200&width=713"
   }
 ]

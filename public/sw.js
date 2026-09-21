@@ -1,4 +1,4 @@
-const VERSION = "modo-nativo-v1";
+const VERSION = "modo-nativo-v2";
 const SHELL_CACHE = `${VERSION}-shell`;
 const API_CACHE = `${VERSION}-api`;
 const SHELL_FILES = [
@@ -41,7 +41,7 @@ self.addEventListener("fetch", event => {
         return;
     }
 
-    event.respondWith(cacheFirstShell(request));
+    event.respondWith(networkFirstShell(request));
 });
 
 async function networkFirstApi(request) {
@@ -63,12 +63,16 @@ async function networkFirstApi(request) {
     }
 }
 
-async function cacheFirstShell(request) {
+async function networkFirstShell(request) {
     const cached = await caches.match(request);
-    if (cached) return cached;
     try {
-        return await fetch(request);
+        const response = await fetch(request);
+        if (response.ok && request.method === "GET") {
+            const cache = await caches.open(SHELL_CACHE);
+            await cache.put(request, response.clone());
+        }
+        return response;
     } catch {
-        return caches.match("./offline.html");
+        return cached || caches.match("./offline.html");
     }
 }

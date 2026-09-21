@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
+@source not "../styles.css";
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -13,8 +15,8 @@
     --color-mint: #9ed8c5;
     --color-sun: #f5c96a;
     --font-display: "Space Grotesk", sans-serif;
-    --radius-panel: 1.25rem;
-    --shadow-lift: 0 18px 50px rgb(23 32 42 / 12%);
+    --radius-panel: 0.5rem;
+    --shadow-lift: 0 2px 8px rgb(23 32 42 / 8%);
 }
 
 :root {
@@ -96,10 +98,7 @@
 @layer components {
     .site-shell {
         min-height: 100vh;
-        background:
-            radial-gradient(circle at 10% 0%, rgb(245 201 106 / 28%), transparent 25rem),
-            radial-gradient(circle at 100% 12%, rgb(158 216 197 / 25%), transparent 30rem),
-            var(--page-bg);
+        background: var(--page-bg);
     }
 
     .navbar {
@@ -107,9 +106,10 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        max-width: 1180px;
+        max-width: 980px;
         margin: 0 auto;
-        padding: 1.25rem 1.25rem 0;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--line);
     }
 
     .brand {
@@ -124,15 +124,15 @@
 
     .brand-mark {
         display: grid;
-        width: 2.35rem;
-        height: 2.35rem;
+        width: 2rem;
+        height: 2rem;
         place-items: center;
-        border-radius: 0.8rem;
+        border-radius: 0.35rem;
         background: var(--accent);
         color: #fffdf8;
         font-size: 0.78rem;
         font-weight: 700;
-        box-shadow: 4px 4px 0 var(--text);
+        box-shadow: none;
     }
 
     .nav-links {
@@ -151,7 +151,7 @@
         min-height: 2.5rem;
         padding: 0.55rem 0.8rem;
         border: 1px solid transparent;
-        border-radius: 0.7rem;
+        border-radius: 0.35rem;
         color: var(--text-soft);
         background: transparent;
         font-size: 0.9rem;
@@ -169,15 +169,15 @@
     }
 
     .page {
-        width: min(1180px, calc(100% - 2.5rem));
+        width: min(980px, calc(100% - 2.5rem));
         margin: 0 auto;
-        padding: 4.5rem 0 4rem;
+        padding: 2rem 0 3rem;
     }
 
     .eyebrow {
-        margin: 0 0 0.75rem;
+        margin: 0 0 0.45rem;
         color: var(--accent-strong);
-        font-size: 0.78rem;
+        font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.14em;
         text-transform: uppercase;
@@ -188,7 +188,7 @@
         align-items: end;
         justify-content: space-between;
         gap: 2rem;
-        margin-bottom: 2.25rem;
+        margin-bottom: 1.5rem;
     }
 
     h1,
@@ -199,38 +199,34 @@
     }
 
     h1 {
-        max-width: 700px;
-        margin-bottom: 0.65rem;
-        font-size: clamp(2.2rem, 6vw, 4.8rem);
-        line-height: 0.98;
-        letter-spacing: -0.07em;
+        margin-bottom: 1.25rem;
+        font-size: 1.8rem;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
     }
 
     .lede {
         max-width: 600px;
         margin-bottom: 0;
         color: var(--text-soft);
-        line-height: 1.65;
+        line-height: 1.5;
     }
 
     .card {
         border: 1px solid var(--line);
-        border-radius: var(--radius-panel);
+        border-radius: 0.35rem;
         background: var(--surface);
-        box-shadow: var(--shadow-lift);
+        box-shadow: none;
     }
 
     .management-layout {
-        display: grid;
-        grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1.5fr);
-        gap: 1.25rem;
-        align-items: start;
+        display: block;
     }
 
     .form-card,
     .table-card,
     .catalog-toolbar {
-        padding: 1.35rem;
+        padding: 1.1rem;
     }
 
     .section-title {
@@ -241,7 +237,17 @@
 
     .form-grid {
         display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 0.9rem;
+    }
+
+    .form-actions,
+    .form-grid > .status {
+        grid-column: 1 / -1;
+    }
+
+    .table-card {
+        margin-top: 1rem;
     }
 
     .field {
@@ -261,7 +267,7 @@
         min-height: 2.8rem;
         padding: 0.7rem 0.8rem;
         border: 1px solid var(--line);
-        border-radius: 0.7rem;
+        border-radius: 0.35rem;
         background: var(--surface);
         color: var(--text);
     }
@@ -292,10 +298,10 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 2.8rem;
+        min-height: 2.6rem;
         padding: 0.7rem 1rem;
         border: 1px solid transparent;
-        border-radius: 0.7rem;
+        border-radius: 0.35rem;
         background: var(--accent);
         color: #fffdf8;
         font-weight: 700;
@@ -305,7 +311,7 @@
 
     .btn:hover {
         background: var(--accent-strong);
-        transform: translateY(-2px);
+        transform: translateY(-1px);
     }
 
     .btn-secondary {
@@ -383,7 +389,7 @@
         align-items: center;
         min-height: 1.65rem;
         padding: 0.2rem 0.6rem;
-        border-radius: 999px;
+        border-radius: 0.25rem;
         background: var(--accent-soft);
         color: var(--accent-strong);
         font-size: 0.72rem;
@@ -400,7 +406,7 @@
     .catalog-grid {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 1.1rem;
+        gap: 0.9rem;
     }
 
     .product-card {
@@ -455,23 +461,6 @@
         border-radius: var(--radius-panel);
         color: var(--text-soft);
         text-align: center;
-    }
-
-    .offline-banner {
-        display: none;
-        max-width: 1180px;
-        margin: 1rem auto 0;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--color-sun);
-        border-radius: 0.7rem;
-        background: var(--color-sun);
-        color: var(--color-ink);
-        font-size: 0.86rem;
-        font-weight: 600;
-    }
-
-    .offline-banner.is-visible {
-        display: block;
     }
 
     .modal {
@@ -550,6 +539,7 @@
         font-size: 2.7rem;
     }
 
+    .form-grid,
     .catalog-toolbar,
     .catalog-grid {
         grid-template-columns: 1fr;

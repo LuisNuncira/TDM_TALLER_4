@@ -7,43 +7,31 @@
     <meta name="description" content="Gestiona el inventario de periféricos de Modo Nativo.">
     <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./css/styles.css">
-    <script>
-        const savedTheme = localStorage.getItem("modo-nativo-theme");
-        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-        document.documentElement.classList.toggle("dark", (savedTheme || systemTheme) === "dark");
-    </script>
     <title>Modo Nativo | Gestión</title>
 </head>
 <body>
     <div class="site-shell">
         <header class="navbar">
             <a class="brand" href="./index.html" aria-label="Modo Nativo, inicio">
-                <span class="brand-mark" aria-hidden="true">MN</span>
                 <span>Modo Nativo</span>
             </a>
             <nav aria-label="Navegación principal">
                 <ul class="nav-links">
                     <li><a href="./index.html" aria-current="page">Gestión</a></li>
                     <li><a href="./catalog.html">Catálogo</a></li>
-                    <li><button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema">Tema</button></li>
                 </ul>
             </nav>
         </header>
 
-        <div class="offline-banner" data-offline-banner role="status">Sin conexión: mostrando datos guardados.</div>
-
         <main class="page">
             <div class="page-heading">
                 <div>
-                    <p class="eyebrow">Inventario / Control</p>
-                    <h1>Haz que cada setup encuentre su pieza.</h1>
-                    <p class="lede">Administra teclados, audio y accesorios desde un inventario claro, rápido y listo para continuar incluso cuando la red se va.</p>
+                    <h1>Productos</h1>
                 </div>
             </div>
 
             <section class="management-layout" aria-label="Gestión de productos">
                 <article class="card form-card">
-                    <p class="eyebrow">Editor</p>
                     <h2 class="section-title" id="formTitle">Añadir producto</h2>
                     <form id="itemForm" class="form-grid" novalidate>
                         <input type="hidden" id="itemId">
@@ -53,7 +41,7 @@
                         </div>
                         <div class="field">
                             <label for="descripcion">Descripción</label>
-                            <textarea class="input" id="descripcion" name="descripcion" placeholder="Cuenta qué hace especial a este producto" required></textarea>
+                            <textarea class="input" id="descripcion" name="descripcion" placeholder="Describe el producto" required></textarea>
                         </div>
                         <div class="field">
                             <label for="precio">Precio (COP)</label>
@@ -88,10 +76,7 @@
 
                 <article class="card table-card">
                     <div class="page-heading">
-                        <div>
-                            <p class="eyebrow">Vista general</p>
-                            <h2 class="section-title">Productos disponibles</h2>
-                        </div>
+                        <h2 class="section-title">Productos disponibles</h2>
                         <p class="status" id="listStatus" role="status" aria-live="polite">Cargando inventario...</p>
                     </div>
                     <div class="table-wrap">

@@ -1,46 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRUD-Red Dragon</title>
+    <meta name="theme-color" content="#e85d4a">
+    <meta name="description" content="Gestiona el inventario de periféricos de Modo Nativo.">
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./css/styles.css">
+    <script>
+        const savedTheme = localStorage.getItem("modo-nativo-theme");
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.classList.toggle("dark", (savedTheme || systemTheme) === "dark");
+    </script>
+    <title>Modo Nativo | Gestión</title>
 </head>
 <body>
-    <nav class="navbar">
-       <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="catalog.html">Catálogo</a></li>
-        </ul>
-    </nav>
-    <h1>Productos Disponibles</h1>
-    <form id="itemForm">
-        <input type="hidden" id="itemId">
-        <input type="text" id="nombre" placeholder="Nombre del producto" required>
-        <input type="text" id="descripcion" placeholder="Descripción del producto" required>
-        <input type="number" id="precio" placeholder="Precio del producto" step="0.001" required>
-        <input type="text" id="categoria" placeholder="Categoría del producto" required>
-        <input type="number" id="stock" placeholder="Stock del producto" required>
-        <input type="url" id="image" placeholder="URL de la imagen" required>
-        <button type="submit" id="submitBtn">Agregar Producto</button>
-        <button type="button" id="CancelButton" style="display: none;">Cancelar</button>
-    </form>
+    <div class="site-shell">
+        <header class="navbar">
+            <a class="brand" href="./index.html" aria-label="Modo Nativo, inicio">
+                <span class="brand-mark" aria-hidden="true">MN</span>
+                <span>Modo Nativo</span>
+            </a>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="./index.html" aria-current="page">Gestión</a></li>
+                    <li><a href="./catalog.html">Catálogo</a></li>
+                    <li><button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema">Tema</button></li>
+                </ul>
+            </nav>
+        </header>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Imagen</th>
-                <th>nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
-                <th>Stock</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="itemsTableBody"></tbody>
-    </table>
+        <div class="offline-banner" data-offline-banner role="status">Sin conexión: mostrando datos guardados.</div>
 
+        <main class="page">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">Inventario / Control</p>
+                    <h1>Haz que cada setup encuentre su pieza.</h1>
+                    <p class="lede">Administra teclados, audio y accesorios desde un inventario claro, rápido y listo para continuar incluso cuando la red se va.</p>
+                </div>
+            </div>
+
+            <section class="management-layout" aria-label="Gestión de productos">
+                <article class="card form-card">
+                    <p class="eyebrow">Editor</p>
+                    <h2 class="section-title" id="formTitle">Añadir producto</h2>
+                    <form id="itemForm" class="form-grid" novalidate>
+                        <input type="hidden" id="itemId">
+                        <div class="field">
+                            <label for="nombre">Nombre</label>
+                            <input class="input" type="text" id="nombre" name="nombre" placeholder="Ej. Teclado Aurora" required minlength="2">
+                        </div>
+                        <div class="field">
+                            <label for="descripcion">Descripción</label>
+                            <textarea class="input" id="descripcion" name="descripcion" placeholder="Cuenta qué hace especial a este producto" required></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="precio">Precio (COP)</label>
+                            <input class="input" type="number" id="precio" name="precio" min="0" step="1" placeholder="0" required>
+                        </div>
+                        <div class="field">
+                            <label for="categoria">Categoría</label>
+                            <select class="select" id="categoria" name="categoria" required>
+                                <option value="">Selecciona una categoría</option>
+                                <option>Teclados</option>
+                                <option>Ratones</option>
+                                <option>Audífonos</option>
+                                <option>Micrófonos</option>
+                                <option>Accesorios</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="stock">Stock</label>
+                            <input class="input" type="number" id="stock" name="stock" min="0" step="1" placeholder="0" required>
+                        </div>
+                        <div class="field">
+                            <label for="image">URL de imagen</label>
+                            <input class="input" type="url" id="image" name="image" placeholder="https://..." required>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn" type="submit" id="submitBtn">Guardar producto</button>
+                            <button class="btn btn-ghost" type="button" id="cancelButton" hidden>Cancelar</button>
+                        </div>
+                        <p class="status" id="formStatus" role="status" aria-live="polite"></p>
+                    </form>
+                </article>
+
+                <article class="card table-card">
+                    <div class="page-heading">
+                        <div>
+                            <p class="eyebrow">Vista general</p>
+                            <h2 class="section-title">Productos disponibles</h2>
+                        </div>
+                        <p class="status" id="listStatus" role="status" aria-live="polite">Cargando inventario...</p>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <caption class="sr-only">Tabla de productos del inventario</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Producto</th>
+                                    <th scope="col">Categoría</th>
+                                    <th scope="col">Precio</th>
+                                    <th scope="col">Stock</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+    <script type="module" src="./js/theme.js"></script>
     <script type="module" src="./js/main.js"></script>
-    </body>
+</body>
 </html>

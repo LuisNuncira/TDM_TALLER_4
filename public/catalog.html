@@ -1,30 +1,84 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo - Red Dragon</title>
+    <meta name="theme-color" content="#e85d4a">
+    <meta name="description" content="Explora periféricos y accesorios para tu espacio de trabajo.">
+    <link rel="manifest" href="./manifest.webmanifest">
     <link rel="stylesheet" href="./css/styles.css">
+    <script>
+        const savedTheme = localStorage.getItem("modo-nativo-theme");
+        const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        document.documentElement.classList.toggle("dark", (savedTheme || systemTheme) === "dark");
+    </script>
+    <title>Modo Nativo | Catálogo</title>
 </head>
 <body>
-    <nav class="navbar">
-        <ul>
-            <li><a href="index.html">Inicio</a></li>
-            <li><a href="catalog.html">Catálogo</a></li>
-        </ul>
-    </nav>
+    <div class="site-shell">
+        <header class="navbar">
+            <a class="brand" href="./index.html" aria-label="Modo Nativo, inicio">
+                <span class="brand-mark" aria-hidden="true">MN</span>
+                <span>Modo Nativo</span>
+            </a>
+            <nav aria-label="Navegación principal">
+                <ul class="nav-links">
+                    <li><a href="./index.html">Gestión</a></li>
+                    <li><a href="./catalog.html" aria-current="page">Catálogo</a></li>
+                    <li><button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema">Tema</button></li>
+                </ul>
+            </nav>
+        </header>
 
-    <h1>Catálogo de Productos</h1>
+        <div class="offline-banner" data-offline-banner role="status">Sin conexión: mostrando datos guardados.</div>
 
-    <div id="catalogContainer" class="catalog-grid"></div>
+        <main class="page">
+            <div class="page-heading">
+                <div>
+                    <p class="eyebrow">Catálogo / Curaduría</p>
+                    <h1>Herramientas para trabajar a tu manera.</h1>
+                    <p class="lede">Encuentra el periférico que encaja con tu ritmo. Filtra por categoría, busca por nombre y ordena el inventario con una sola mirada.</p>
+                </div>
+            </div>
 
-    <div id="itemModal" class="modal">
-        <div class="modal-content">
-            <span id="modalClose" class="modal-close">&times;</span>
-            <div id="modalBody"></div>
+            <section aria-label="Filtros del catálogo">
+                <div class="card catalog-toolbar">
+                    <div class="field">
+                        <label for="searchInput">Buscar</label>
+                        <input class="input" type="search" id="searchInput" placeholder="Nombre o descripción">
+                    </div>
+                    <div class="field">
+                        <label for="categoryFilter">Categoría</label>
+                        <select class="select" id="categoryFilter">
+                            <option value="">Todas</option>
+                            <option>Teclados</option>
+                            <option>Ratones</option>
+                            <option>Audífonos</option>
+                            <option>Micrófonos</option>
+                            <option>Accesorios</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="sortFilter">Ordenar</label>
+                        <select class="select" id="sortFilter">
+                            <option value="">Relevancia</option>
+                            <option value="precio">Precio menor</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="status" id="catalogStatus" role="status" aria-live="polite">Cargando catálogo...</p>
+                <div id="catalogContainer" class="catalog-grid"></div>
+            </section>
+        </main>
+
+        <div id="itemModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+            <div class="modal-content">
+                <button id="modalClose" class="modal-close" type="button" aria-label="Cerrar detalle">&times;</button>
+                <div id="modalBody"></div>
+            </div>
         </div>
     </div>
-
+    <script type="module" src="./js/theme.js"></script>
     <script type="module" src="./js/catalog.js"></script>
 </body>
 </html>

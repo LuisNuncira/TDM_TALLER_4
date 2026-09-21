@@ -1,79 +1,106 @@
-import { getItems, getItem, createItem, updateItem, deleteItem } from './services/api.js';
-import { renderItems, resetForm, fillForm } from './ui/ui.js';
+import { createItem, deleteItem, getItem, getItems, updateItem } from "./services/api.js";
+import { fillForm, renderItems, renderTableState, resetForm, setStatus } from "./ui/ui.js";
 
 const form = document.getElementById("itemForm");
 const tableBody = document.getElementById("itemsTableBody");
-const submitBtn = document.getElementById("submitBtn");
+const submitButton = document.getElementById("submitBtn");
+const cancelButton = document.getElementById("cancelButton");
+const formTitle = document.getElementById("formTitle");
+const formStatus = document.getElementById("formStatus");
+const listStatus = document.getElementById("listStatus");
 let editingId = null;
 
-tableBody.addEventListener("click", async (e) => {
-    const btn = e.target.closest("button");
-    if (!btn) return;
-    const id = Number(btn.dataset.id);
-
-    if (btn.classList.contains("btn-delete")) {
-        try {
-            await deleteItem(id);
-            if (editingId === id) {
-                resetForm(form, submitBtn);
-                editingId = null;
-            }
-            await loadItems();
-        } catch (err) {
-            console.error("Error al eliminar el item:", err);
-            alert("No se pudo eliminar el item.");
-        }
-    } else if (btn.classList.contains("btn-edit")) {
-        try {
-            if (editingId === id) {
-                resetForm(form, submitBtn);
-                editingId = null;
-                return;
-            }
-            const item = await getItem(id);
-            fillForm(form, item, submitBtn);
-            editingId = id;
-        } catch (err) {
-            console.error("Error al cargar el item:", err);
-            alert("No se pudo cargar el item para editarlo.");
-        }
-    }
-});
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const nombre = form.querySelector("#nombre").value.trim();
-    const descripcion = form.querySelector("#descripcion").value.trim();
-    const precio = Number(form.querySelector("#precio").value);
-    const categoria = form.querySelector("#categoria").value;
-    const stock = Number(form.querySelector("#stock").value);
-    const image = form.querySelector("#image").value.trim();
-
-    if (!nombre) {
-        alert("El campo nombre es obligatorio.");
+function showError(error, target) {
+    if (error.code === "OFFLINE") {
+        setStatus(target, "No disponible sin conexión.", "error");
         return;
     }
-    const payload = { nombre, descripcion, precio, categoria, stock, image };
+    const details = error.details ? Object.values(error.details).join(" ") : error.message;
+    setStatus(target, details || "No se pudo completar la operación.", "error");
+}
+
+async function loadItems() {
+    setStatus(listStatus, "Cargando inventario...");
+    renderTableState(tableBody, "loading", "Cargando productos...");
+    try {
+        const items = await getItems();
+        if (items.length === 0) {
+            renderTableState(tableBody, "empty", "No hay items en el inventario.");
+            setStatus(listStatus, "Inventario vacío.");
+            return;
+        }
+        renderItems(items, tableBody);
+        setStatus(listStatus, `${items.length} productos disponibles.`, "success");
+    } catch (error) {
+        renderTableState(tableBody, "error", "No se pudo cargar el inventario.");
+        showError(error, listStatus);
+    }
+}
+
+tableBody.addEventListener("click", async event => {
+    const button = event.target.closest("button[data-id]");
+    if (!button) return;
+    const id = Number(button.dataset.id);
+
+    if (button.classList.contains("btn-delete")) {
+        try {
+            await deleteItem(id);
+            if (editingId === id) resetForm(form, submitButton, cancelButton, formTitle);
+            editingId = null;
+            setStatus(formStatus, "Producto eliminado.", "success");
+            await loadItems();
+        } catch (error) {
+            showError(error, formStatus);
+        }
+        return;
+    }
+
+    try {
+        const item = await getItem(id);
+        fillForm(form, item, submitButton, cancelButton, formTitle);
+        editingId = id;
+        form.querySelector("#nombre").focus();
+    } catch (error) {
+        showError(error, formStatus);
+    }
+});
+
+form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!form.reportValidity()) {
+        setStatus(formStatus, "Revisa los campos marcados.", "error");
+        return;
+    }
+
+    const payload = {
+        nombre: form.querySelector("#nombre").value.trim(),
+        descripcion: form.querySelector("#descripcion").value.trim(),
+        precio: Number(form.querySelector("#precio").value),
+        categoria: form.querySelector("#categoria").value,
+        stock: Number(form.querySelector("#stock").value),
+        image: form.querySelector("#image").value.trim()
+    };
+
     try {
         if (editingId) {
             await updateItem(editingId, payload);
-            editingId = null;
+            setStatus(formStatus, "Producto actualizado.", "success");
         } else {
             await createItem(payload);
+            setStatus(formStatus, "Producto creado.", "success");
         }
-        resetForm(form, submitBtn);
+        editingId = null;
+        resetForm(form, submitButton, cancelButton, formTitle);
         await loadItems();
-    } catch (err) {
-        console.error("Error al guardar el item:", err);
-        alert("No se pudo guardar el item.");
+    } catch (error) {
+        showError(error, formStatus);
     }
 });
-async function loadItems() {
-    try {
-        const items = await getItems();
-        renderItems(items, tableBody);
-    } catch (err) {
-        console.error("Error al cargar la lista:", err);
-        alert("No se pudieron cargar los items.");
-    }
-}
+
+cancelButton.addEventListener("click", () => {
+    editingId = null;
+    resetForm(form, submitButton, cancelButton, formTitle);
+    setStatus(formStatus, "Edición cancelada.");
+});
+
 loadItems();

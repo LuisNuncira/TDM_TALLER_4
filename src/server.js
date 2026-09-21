@@ -1,40 +1,11 @@
-const http = require("http");
-const fs = require("fs/promises");
-const path = require("path");
-const handleItemsRoutes = require("./routes/items");
+import "dotenv/config";
+import morgan from "morgan";
+import app from "./app.js";
 
-const PORT = 3000;
-const PUBLIC_PATH = path.join(__dirname, "..", "public");
+const PORT = Number(process.env.PORT) || 3001;
 
-const MIME_TYPES = {
-    ".html": "text/html",
-    ".css": "text/css",
-    ".js": "text/javascript",
-    ".json": "application/json",
-    ".png": "image/png",
-    ".jpeg": "image/jpeg",
-    ".gif": "image/gif"
-};
-const server = http.createServer(async (req, res) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    if (handleItemsRoutes(req, res)) return;
-    try {
-        const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
-        let pathname = parsedUrl.pathname === "/" ? "/index.html" : parsedUrl.pathname;
-        const ext = path.extname(pathname);
-        const fullPath = path.join(PUBLIC_PATH, pathname);
-        const contentType = MIME_TYPES[ext] || "text/plain";
-        const content = await fs.readFile(fullPath);
+app.use(morgan("tiny"));
 
-        res.writeHead(200, { "Content-Type": contentType });
-        res.end(content);
-    } catch (err) {
-        const statusCode = err.code === "ENOENT" ? 404 : err.statusCode || 500;
-
-        res.writeHead(statusCode, { "Content-Type": "text/plain" });
-        res.end(`${statusCode} - ${err.message}`);
-    }
-});
-server.listen(PORT, () => {
+app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });

@@ -1,66 +1,79 @@
-import { getItems, getItem } from "./services/api.js";
+import { getItem, getItems } from "./services/api.js";
+import { renderCatalog, renderCatalogState, renderDetail, setStatus } from "./ui/ui.js";
 
 const catalogContainer = document.getElementById("catalogContainer");
+const catalogStatus = document.getElementById("catalogStatus");
+const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+const sortFilter = document.getElementById("sortFilter");
 const modal = document.getElementById("itemModal");
 const modalBody = document.getElementById("modalBody");
 const modalClose = document.getElementById("modalClose");
+let searchTimer;
+
+function currentFilters() {
+    return {
+        q: searchInput.value.trim(),
+        categoria: categoryFilter.value,
+        sort: sortFilter.value
+    };
+}
 
 async function loadCatalog() {
+    const filters = currentFilters();
+    const hasFilters = Object.values(filters).some(Boolean);
+    setStatus(catalogStatus, "Cargando catálogo...");
+    renderCatalogState(catalogContainer, "Cargando productos...");
+
     try {
-        const items = await getItems();
-        catalogContainer.innerHTML = "";
-        items.forEach(item => renderItem(item));
-    } catch (err) {
-        console.error("Error cargando catálogo:", err);
-        catalogContainer.innerHTML = "<p>No se pudieron cargar los productos.</p>";
+        const items = await getItems(filters);
+        if (items.length === 0) {
+            renderCatalogState(catalogContainer, hasFilters ? "No hay resultados para tu búsqueda." : "No hay items disponibles.");
+            setStatus(catalogStatus, "0 resultados.");
+            return;
+        }
+        renderCatalog(items, catalogContainer);
+        setStatus(catalogStatus, `${items.length} resultados.`, "success");
+    } catch (error) {
+        renderCatalogState(catalogContainer, "No se pudo cargar el catálogo.");
+        setStatus(catalogStatus, error.code === "OFFLINE" ? "No disponible sin conexión." : error.message, "error");
     }
 }
 
-function renderItem(item) {
-    const card = document.createElement("div");
-    card.classList.add("card");
-    card.innerHTML = `
-        <img src="${item.image}" alt="${item.nombre}">
-        <h3>${item.nombre}</h3>
-        <p class="card-category">${item.categoria}</p>
-        <p class="card-price">$${item.precio}</p>
-        <button class="btn-detail" data-id="${item.id}">Ver detalle</button>
-    `;
-    catalogContainer.appendChild(card);
+function scheduleLoad() {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(loadCatalog, 250);
 }
 
-catalogContainer.addEventListener("click", async (e) => {
-    const btn = e.target.closest(".btn-detail");
-    if (!btn) return;
-    const id = Number(btn.dataset.id);
+searchInput.addEventListener("input", scheduleLoad);
+categoryFilter.addEventListener("change", loadCatalog);
+sortFilter.addEventListener("change", loadCatalog);
+
+catalogContainer.addEventListener("click", async event => {
+    const button = event.target.closest(".btn-detail");
+    if (!button) return;
     try {
-        const item = await getItem(id);
-        showModal(item);
-    } catch (err) {
-        console.error("Error cargando el detalle:", err);
-        alert("No se pudo cargar el detalle del producto.");
+        const item = await getItem(Number(button.dataset.id));
+        renderDetail(item, modalBody);
+        modal.hidden = false;
+        modal.classList.add("active");
+        modalClose.focus();
+    } catch (error) {
+        setStatus(catalogStatus, error.message, "error");
     }
 });
 
-function showModal(item) {
-    modalBody.innerHTML = `
-        <img src="${item.image}" alt="${item.nombre}">
-        <h2>${item.nombre}</h2>
-        <p class="card-category">${item.categoria}</p>
-        <p>${item.descripcion}</p>
-        <p><strong>Precio:</strong> $${item.precio}</p>
-        <p><strong>Stock disponible:</strong> ${item.stock}</p>
-    `;
-    modal.classList.add("active");
-}
-
 function closeModal() {
     modal.classList.remove("active");
+    modal.hidden = true;
 }
 
 modalClose.addEventListener("click", closeModal);
-modal.addEventListener("click", (e) => {
-    if (e.target === modal) closeModal();
+modal.addEventListener("click", event => {
+    if (event.target === modal) closeModal();
+});
+window.addEventListener("keydown", event => {
+    if (event.key === "Escape") closeModal();
 });
 
 loadCatalog();

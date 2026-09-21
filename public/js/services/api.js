@@ -1,39 +1,61 @@
-const API_URL = "./api/items";
+const API_URL = "/api/items";
 
-export async function getItems() {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error("Error al cargar items");
-    return res.json();
+async function request(url, options = {}) {
+    if (options.method && !navigator.onLine) {
+        const error = new Error("No disponible sin conexión");
+        error.code = "OFFLINE";
+        throw error;
+    }
+
+    try {
+        const response = await fetch(url, options);
+        if (response.headers.get("X-Offline-Cache") === "true") {
+            window.dispatchEvent(new CustomEvent("app:offline-data"));
+        }
+        const data = await response.json();
+        if (!response.ok) {
+            const error = new Error(data.error || "La solicitud no pudo completarse.");
+            error.details = data.errors;
+            throw error;
+        }
+        return data;
+    } catch (error) {
+        if (!navigator.onLine && !options.method) {
+            window.dispatchEvent(new CustomEvent("app:offline-data"));
+        }
+        throw error;
+    }
 }
 
-export async function getItem(id) {
-    const res = await fetch(`${API_URL}/${id}`);
-    if (!res.ok) throw new Error("Item no encontrado");
-    return res.json();
+export function getItems(filters = {}) {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(filters)) {
+        if (value) params.set(key, value);
+    }
+    const query = params.toString();
+    return request(query ? `${API_URL}?${query}` : API_URL);
 }
 
-export async function createItem(data) {
-    const res = await fetch(API_URL, {
+export function getItem(id) {
+    return request(`${API_URL}/${id}`);
+}
+
+export function createItem(data) {
+    return request(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error("Error al crear item");
-    return res.json();
 }
 
-export async function updateItem(id, data) {
-    const res = await fetch(`${API_URL}/${id}`, {
+export function updateItem(id, data) {
+    return request(`${API_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
     });
-    if (!res.ok) throw new Error("Error al actualizar item");
-    return res.json();
 }
 
-export async function deleteItem(id) {
-    const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    if (!res.ok) throw new Error("Error al eliminar item");
-    return res.json();
+export function deleteItem(id) {
+    return request(`${API_URL}/${id}`, { method: "DELETE" });
 }
